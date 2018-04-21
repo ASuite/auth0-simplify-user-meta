@@ -44,7 +44,29 @@ $cleanedkey = str_replace('"', "", $key);
 $cleanedvalue = str_replace('"', "", $value);
 
 update_user_meta($currentuserid, $cleanedkey, $cleanedvalue);
+
+if ($cleanedkey == 'given_name') {
+wp_update_user( array( 'ID' => $currentuserid, 'first_name' => $cleanedvalue ) );
+}elseif ($cleanedkey == 'family_name') {
+wp_update_user( array( 'ID' => $currentuserid, 'last_name' => $cleanedvalue ) );
+}
 }
 
 }
 add_action('wp_login', 'your_function', 10, 2);
+
+function do_anything() {
+$current_user = wp_get_current_user();
+$userid = $current_user->ID;
+    
+$auth0fname = get_user_meta($userid, 'given_name', true ); 
+$auth0lname = get_user_meta($userid, 'family_name', true ); 
+
+if (!empty($auth0fname)) {
+wp_update_user( array( 'ID' => $userid, 'first_name' => $auth0fname, 'last_name' => $auth0lname, 'display_name' => $auth0fname . ' ' . $auth0lname ) );
+}
+
+
+}
+add_action('wp_login', 'do_anything', 10, 2);
+
